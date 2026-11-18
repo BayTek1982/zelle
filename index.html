@@ -241,7 +241,7 @@ function topP(g,st,arr,col,y=18){const tx=arr[Math.min(st.s,arr.length-1)];if(tx
 function lblock(g,x,y,b,a=1,w=22){if(a<=0)return;g.save();g.globalAlpha*=a;const c=bcol(b);box(g,x-w/2,y-w/2,w,w,hexA(c,.22),c,4,1.5);txt(g,x,y+1,b,c,Math.min(13,w*.6),'center',800);g.restore();}
 function rbc(g,x,y,r,col,squash=1){ell(g,x,y,r,r*squash,0,hexA(col,.35),col,1.6);ell(g,x,y,r*.45,r*.45*squash,0,hexA(col,.15),null);}
 
-const CATS={grundlagen:'Grundlagen',organellen:'Organellen',membran:'Membran & Transport',dna:'DNA & Eiweiße',teilung:'Zellteilung',stoff:'Stoffwechsel'};
+const CATS={grundlagen:'Grundlagen',organellen:'Organellen',membran:'Membran & Transport',dna:'DNA & Eiweiße',teilung:'Zellteilung',stoff:'Stoffwechsel',koerper:'Zellen im Körper'};
 const LESSONS=[];function les(o){LESSONS.push(o);}
 function S(a){return a.map(([d,text])=>({d,text}));}
 
@@ -784,6 +784,346 @@ les({id:'fotosynthese',cat:'stoff',title:'Fotosynthese',sub:'Aus Licht, Wasser u
  bedeutung:'Die Fotosynthese ist die Grundlage fast aller Nahrungsketten und liefert den Sauerstoff in unserer Luft. Sie ist das Gegenstück zur Zellatmung.',
  tipp:'Ein großer Laubbaum erzeugt an einem Sonnentag so viel Sauerstoff, wie mehrere Menschen an einem Tag einatmen. Etwa die Hälfte des Sauerstoffs der Erde stammt aus Algen im Meer.'}});
 
+/* ================= PAKET 2 ================= */
+function ab(g,x,y,s,ang,col,a=1){if(a<=0)return;g.save();g.globalAlpha*=a;g.translate(x,y);g.rotate(ang||0);g.lineCap='round';g.strokeStyle=col;g.lineWidth=Math.max(1.4,s*.22);g.beginPath();g.moveTo(0,s);g.lineTo(0,0);g.lineTo(-s*.6,-s*.7);g.moveTo(0,0);g.lineTo(s*.6,-s*.7);g.stroke();g.restore();}
+function bact(g,x,y,col,a=1,ang=0,s=1){if(a<=0)return;g.save();g.globalAlpha*=a;g.translate(x,y);g.rotate(ang);box(g,-11*s,-5.5*s,22*s,11*s,hexA(col,.3),col,5.5*s,1.5);g.restore();}
+function neuronBody(g,x,y,r,col){for(let i=0;i<6;i++){const an=Math.PI*.55+i*.36;const x2=x+Math.cos(an)*r*2.6,y2=y+Math.sin(an)*r*2.4;line(g,x,y,x2,y2,col,2.2);line(g,x2,y2,x2+Math.cos(an+.5)*r,y2+Math.sin(an+.5)*r,col,1.4);line(g,x2,y2,x2+Math.cos(an-.5)*r,y2+Math.sin(an-.5)*r,col,1.4);}circ(g,x,y,r,hexA(col,.3),col,2);circ(g,x,y,r*.4,col);}
+
+/* ---------- GRUNDLAGEN (Paket 2) ---------- */
+les({id:'pilzzelle',cat:'grundlagen',title:'Pilzzellen – die Hefe',sub:'Pilze sind weder Tier noch Pflanze',
+ steps:S([[5000,'Hefe ist ein Pilz aus nur einer Zelle. Sie hat einen echten Zellkern, Mitochondrien und eine Vakuole – wie unsere Zellen.'],
+ [5000,'Wie Pflanzen hat sie eine feste Zellwand – aber nicht aus Zellulose, sondern aus Chitin. Das steckt auch im Panzer von Insekten.'],
+ [5200,'Hefe vermehrt sich durch Knospung: An der Seite wächst eine kleine Tochterzelle heraus.'],
+ [5000,'Die Knospe bekommt eine Kopie des Zellkerns und schnürt sich ab. Jetzt gibt es zwei Hefezellen.'],
+ [5000,'Hefe nutzen wir seit Tausenden Jahren: zum Backen von Brot und zum Brauen von Bier. Pilze haben keine Chloroplasten.']]),
+ draw(g,st){const{t,s,p}=st;
+  const cw=s===1?.6+.4*Math.sin(t*.01):1;ell(g,180,128,72,58,0,hexA(C.gold,.06),hexA(C.gold,cw),5);ell(g,180,128,64,50,0,hexA(C.lime,.06),C.pink,1.4);
+  nucleus(g,160,122,16,C.purple);circ(g,205,140,18,hexA(C.aqua,.18),C.aqua,1.6);mito(g,150,160,22,10,.3,C.orange);mito(g,212,96,20,9,-.5,C.orange);
+  const br=s<2?0:s===2?30*ease(p):30,bx=s<3?272:s===3?lerp(272,330,ease(p)):330;
+  if(br>0){ell(g,bx,108,br,br*.85,0,hexA(C.gold,.06),C.gold,4);ell(g,bx,108,br-6,br*.85-6,0,null,C.pink,1.2);if(s>=3)nucleus(g,bx,108,9,C.purple,s===3?ease(p):1);}
+  pill(g,180,28,'HEFEZELLE · 5–10 µm',C.lime,1);tag(g,124,92,70,46,'ZELLWAND (CHITIN)',C.gold,ap(st,1));
+  pill(g,330,52,'KNOSPE',C.gold,ap(st,2));pill(g,330,160,'NEUE HEFEZELLE',C.up,ap(st,3));
+  pill(g,200,232,'BROT · BIER · PILZE',C.orange,ap(st,4));},
+ box:{was:'Pilze bilden ein eigenes Reich neben Tieren und Pflanzen. Hefe ist ein einzelliger Pilz, Speisepilze bestehen aus vielen Zellfäden.',h2:'So erkennst du sie',
+ erkennen:['<b>Echter Zellkern</b> (Eukaryot)','<b>Zellwand aus Chitin</b>, nicht aus Zellulose','<b>Keine Chloroplasten</b> – Pilze machen keine Fotosynthese','Hefe vermehrt sich durch <b>Knospung</b>'],
+ bedeutung:'Weil Pilze kein Sonnenlicht nutzen, müssen sie Nahrung aufnehmen – wie Tiere. Genetisch sind Pilze näher mit Tieren verwandt als mit Pflanzen.',
+ tipp:'Beim Brotbacken frisst die Hefe Zucker und bildet Kohlendioxid. Die Gasbläschen lassen den Teig aufgehen – darum ist Brot so luftig.'}});
+
+les({id:'stammzellen',cat:'grundlagen',title:'Stammzellen',sub:'Zellen, aus denen alles werden kann',
+ steps:S([[4800,'Eine Stammzelle ist noch nicht festgelegt. Sie hat noch keine besondere Aufgabe.'],
+ [5000,'Stammzellen können sich selbst erneuern: Bei der Teilung bleibt immer eine Stammzelle übrig.'],
+ [6000,'Die andere Tochterzelle spezialisiert sich – sie wird zum Beispiel zur Nervenzelle, Muskelzelle, roten Blutzelle oder Hautzelle.'],
+ [5200,'Embryonale Stammzellen können fast alles werden. Erwachsene Stammzellen nur bestimmte Zelltypen.'],
+ [5200,'Im Knochenmark bilden Stammzellen pausenlos neues Blut – mehrere Millionen Blutzellen pro Sekunde.']]),
+ draw(g,st){const{t,s,p}=st;
+  blob(g,70,110,32,30,t,.05,hexA(C.gold,.15),C.gold,2.2);nucleus(g,70,110,12,C.purple);pill(g,70,62,'STAMMZELLE',C.gold,1);
+  const a1=ap(st,1);if(a1>0){arrow(g,70,144,70,166,C.gold,2,a1);g.save();g.globalAlpha*=a1;blob(g,70,196,24,22,t,.05,hexA(C.gold,.15),C.gold,2,2);nucleus(g,70,196,9,C.purple);g.restore();}
+  pill(g,70,236,'BLEIBT STAMMZELLE',C.gold,a1);
+  const tg=[[262,42,'NERVENZELLE',C.lime],[262,96,'MUSKELZELLE',C.down],[262,150,'ROTE BLUTZELLE',C.pink],[262,204,'HAUTZELLE',C.orange]];
+  tg.forEach((q,i)=>{const a=s<2?0:s===2?clamp(p*5-i*.9):1;if(a<=0)return;arrow(g,106,110,q[0]-34,q[1],hexA(q[3],.7),1.6,a);g.save();g.globalAlpha*=a;
+   if(i===0){neuronBody(g,q[0],q[1],7,q[3]);line(g,q[0],q[1],q[0]+26,q[1]-4,q[3],2);}else if(i===1){ell(g,q[0],q[1],26,8,0,hexA(q[3],.25),q[3],1.6);for(let k=-3;k<=3;k++)line(g,q[0]+k*6,q[1]-6,q[0]+k*6,q[1]+6,hexA(q[3],.6),1);}else if(i===2){rbc(g,q[0],q[1],12,q[3]);}else{poly(g,hexPts(q[0],q[1],13),hexA(q[3],.2),q[3],1.6);circ(g,q[0],q[1],3.5,C.purple);}
+   g.restore();pill(g,q[0]+38,q[1],q[2],q[3],a,'left');});
+  
+  pill(g,200,18,s===4?'KNOCHENMARK: MILLIONEN BLUTZELLEN PRO SEKUNDE':'EMBRYONAL: FAST ALLES · ERWACHSEN: WENIGES',s===4?C.down:C.purple,s>=3?clamp(p*5):0,'center',9.5);},
+ box:{was:'Stammzellen sind unspezialisierte Zellen. Sie können sich unbegrenzt teilen und zu verschiedenen Zelltypen werden.',h2:'So erkennst du sie',
+ erkennen:['<b>Selbsterneuerung:</b> Eine Stammzelle bleibt immer erhalten','<b>Differenzierung:</b> Tochterzellen spezialisieren sich','<b>Embryonal:</b> können fast jeden Zelltyp bilden','<b>Erwachsen:</b> z. B. im Knochenmark, in der Haut, im Darm'],
+ bedeutung:'Stammzellen halten deinen Körper jung: Sie ersetzen Blut, Haut und Darmschleimhaut. Bei Blutkrebs kann eine Stammzellspende Leben retten.',
+ tipp:'Jeder kann sich bei der DKMS als Stammzellspender registrieren lassen – ein Wattestäbchen-Abstrich im Mund genügt.'}});
+
+/* ---------- ORGANELLEN (Paket 2) ---------- */
+les({id:'zellskelett',cat:'organellen',title:'Das Zellskelett',sub:'Gerüst, Schienen und Muskeln der Zelle',
+ steps:S([[4600,'Eine Zelle ist kein weicher Sack: Ein Netz aus Eiweißfasern gibt ihr Form und Halt – das Zellskelett.'],
+ [5000,'Mikrotubuli sind feste Röhren. Sie laufen sternförmig von der Zellmitte nach außen – wie Schienen.'],
+ [5400,'Auf diesen Schienen laufen Motor-Eiweiße. Sie tragen Bläschen und Organellen Schritt für Schritt durch die Zelle.'],
+ [5000,'Feine Aktinfasern liegen dicht unter der Membran. Damit kann die Zelle ihre Form ändern und sich sogar bewegen.'],
+ [5000,'Intermediärfilamente sind zähe Seile. Sie machen die Zelle reißfest – besonders in der Haut.']]),
+ draw(g,st){const{t,s,p}=st;const cx=200,cy=125;
+  blob(g,cx,cy,170,98,t,.02,hexA(C.pink,.05),C.pink,2.2);nucleus(g,cx+30,cy+8,20,C.purple,.6);
+  const a1=ap(st,1);if(a1>0){g.save();g.globalAlpha*=a1;for(let i=0;i<14;i++){const an=i/14*TAU+.1;line(g,cx-20,cy-10,cx-20+Math.cos(an)*150*(.8+.2*R1(i,2)),cy-10+Math.sin(an)*88*(.8+.2*R1(i,2)),C.up,2);}circ(g,cx-20,cy-10,5,C.up);g.restore();}
+  const a2=ap(st,2);if(a2>0){const an=.1+TAU*1/14;const f=fr(t*.00025);const d=20+f*110;const x=cx-20+Math.cos(an)*d*1,y=cy-10+Math.sin(an)*d*.58;g.save();g.globalAlpha*=a2;circ(g,x,y-10,8,hexA(C.gold,.3),C.gold,1.6);const st2=Math.sin(t*.02)*3;line(g,x,y-2,x-3+st2,y+3,C.gold,1.6);line(g,x,y-2,x+3-st2,y+3,C.gold,1.6);g.restore();}
+  const a3=ap(st,3);if(a3>0){g.save();g.globalAlpha*=a3;for(let i=0;i<48;i++){const an=i/48*TAU,an2=an+.18;const r=.86+.06*R1(i,3);line(g,cx+Math.cos(an)*158*r,cy+Math.sin(an)*90*r,cx+Math.cos(an2)*150*r,cy+Math.sin(an2)*84*r,C.down,1.3);}g.restore();}
+  const a4=ap(st,4);if(a4>0){g.save();g.globalAlpha*=a4;g.strokeStyle=C.blue;g.lineWidth=1.6;for(let k=0;k<5;k++){g.beginPath();for(let j=0;j<=20;j++){const x=lerp(cx-140,cx+140,j/20),y=cy-60+k*28+Math.sin(j*.9+k*2)*8;j?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}g.restore();}
+  pill(g,200,18,'GIBT FORM UND HALT',C.pink,1);pill(g,62,210,'MIKROTUBULI',C.up,a1);pill(g,300,40,'MOTOR-EIWEISS',C.gold,a2);pill(g,330,220,'AKTIN',C.down,a3);pill(g,200,238,'INTERMEDIÄRFILAMENTE',C.blue,a4);},
+ box:{was:'Das Zellskelett (Cytoskelett) ist ein Netz aus Eiweißfasern im Zellplasma. Es gibt der Zelle Form, Halt und ermöglicht Bewegung.',h2:'Die drei Fasern',
+ erkennen:['<b>Mikrotubuli:</b> dicke Röhren, Schienen für den Transport','<b>Aktinfilamente:</b> dünn, für Formänderung und Bewegung','<b>Intermediärfilamente:</b> zäh und reißfest','<b>Motor-Eiweiße:</b> laufen auf den Schienen'],
+ bedeutung:'Ohne Zellskelett könnten sich Zellen nicht teilen, keine Stoffe transportieren und nicht wandern – zum Beispiel weiße Blutzellen zu einer Entzündung.',
+ tipp:'Haare und Fingernägel bestehen aus Keratin – das ist ein Intermediärfilament, also ein Teil des Zellskeletts in großer Menge.'}});
+
+les({id:'vakuole',cat:'organellen',title:'Die Vakuole',sub:'Wasserspeicher und Lager der Pflanzenzelle',
+ steps:S([[4800,'Die Vakuole füllt oft den größten Teil einer Pflanzenzelle. Sie ist mit Zellsaft gefüllt – vor allem mit Wasser.'],
+ [5000,'Sie ist auch ein Lager: für Zucker, Farbstoffe, Salze und Abfallstoffe, die die Zelle nicht braucht.'],
+ [5400,'Fehlt Wasser, schrumpft die Vakuole. Die Zelle verliert ihren Druck – die Pflanze lässt die Blätter hängen und welkt.'],
+ [5200,'Mit Wasser füllt sie sich wieder und drückt von innen gegen die Zellwand. Dieser Innendruck (Turgor) macht die Pflanze straff.'],
+ [5000,'Die Farben von Roter Bete, Rotkohl und vielen Blüten sitzen in der Vakuole.']]),
+ draw(g,st){const{t,s,p}=st;const v=s<2?1:s===2?lerp(1,.5,ease(p)):s===3?lerp(.5,1,ease(p)):1;
+  box(g,40,46,200,160,hexA(C.lime,.05),C.lime,12,5);const ins=7+(1-v)*34;box(g,40+ins,46+ins,200-2*ins,160-2*ins,hexA(C.pink,.05),C.pink,9,1.4);
+  const vi=ins+14+(1-v)*6;const vc=s===4?C.purple:C.aqua;box(g,40+vi+30,46+vi,200-2*vi-30,160-2*vi,hexA(vc,s===4?.35:.16),vc,20,1.8);
+  nucleus(g,40+ins+20,46+ins+22,11,C.purple);chloro(g,40+ins+18,206-ins-22,16,9,.3,C.up,1,2);
+  const a1=ap(st,1);if(a1>0&&s<4){const cols=[C.gold,C.pink,C.mute];const pts=[];for(let i=0;i<14;i++){dots(g,[[40+vi+40+R1(i,1)*(200-2*vi-50),46+vi+10+R1(i,2)*(160-2*vi-20)]],cols[i%3],2.4,a1);}}
+  const dr=s<2?0:s===2?ease(p):s===3?1-ease(p):0;g.save();g.lineCap='round';g.strokeStyle=C.up;g.lineWidth=4;g.beginPath();g.moveTo(330,224);const tx=330+dr*34,ty=70+dr*46;g.quadraticCurveTo(330,140,tx,ty);g.stroke();
+  for(const sg of[-1,1]){const lx=330+sg*16+dr*sg*4,ly=150+dr*22;ell(g,lx,ly,16,6,sg*(.4+dr*.9),hexA(C.up,.3),C.up,1.6);}ell(g,tx+6,ty+4,14,6,.5+dr*1.1,hexA(C.up,.3),C.up,1.6);g.restore();line(g,290,224,370,224,C.orange,2);
+  pill(g,180,128,'VAKUOLE',vc,1);pill(g,140,26,'ZELLSAFT = VOR ALLEM WASSER',C.aqua,s===0?1:0,'center',10);pill(g,140,26,'LAGER: ZUCKER · FARBEN · ABFALL',C.gold,s===1?1:0,'center',10);
+  pill(g,140,26,'WASSERMANGEL: PFLANZE WELKT',C.down,s===2?1:0,'center',10);pill(g,140,26,'TURGOR HÄLT DIE PFLANZE STRAFF',C.up,s===3?1:0,'center',10);pill(g,140,26,'FARBSTOFFE IN DER VAKUOLE',C.purple,s===4?1:0,'center',10);pill(g,140,232,'PFLANZENZELLE',C.lime,1);},
+ box:{was:'Die Vakuole ist ein großer, mit Zellsaft gefüllter Raum in Pflanzenzellen. Sie ist Wasserspeicher, Lager und Mülleimer zugleich.',h2:'So erkennst du sie',
+ erkennen:['<b>Groß:</b> oft 80–90 % der Pflanzenzelle','<b>Zellsaft:</b> Wasser mit Zucker, Salzen, Farbstoffen','<b>Turgor:</b> Innendruck gegen die Zellwand','Tierzellen haben nur <b>kleine</b> Vakuolen'],
+ bedeutung:'Der Turgor ersetzt bei krautigen Pflanzen das Skelett. Darum stehen Blumen im Wasser wieder auf, wenn man sie rechtzeitig gießt.',
+ tipp:'Leg einen welken Salat für 10 Minuten in kaltes Wasser: Die Vakuolen saugen sich voll, und die Blätter werden wieder knackig.'}});
+
+les({id:'zentriolen',cat:'organellen',title:'Zentriolen, Geißeln & Flimmerhärchen',sub:'Kleine Röhren mit großer Wirkung',
+ steps:S([[5000,'Zentriolen sind winzige Röhren aus neun Dreiergruppen von Mikrotubuli. Sie liegen meist als Paar rechtwinklig zueinander.'],
+ [5000,'Bei der Zellteilung wandern sie zu den Polen und bilden dort den Ansatz für die Spindelfasern.'],
+ [5200,'Flimmerhärchen (Zilien) sind kurze Härchen auf der Zelloberfläche. In der Lunge schlagen sie im Takt und schieben Schleim und Staub nach oben.'],
+ [5000,'Eine Geißel ist ein langes Härchen zum Schwimmen. Das Spermium schlägt damit wie mit einem Schwanz.'],
+ [5000,'Im Querschnitt haben Geißeln und Flimmerhärchen ein typisches Muster: neun Doppelröhren außen, zwei in der Mitte – „9 + 2“.']]),
+ draw(g,st){const{t,s,p}=st;const A=k=>s===k?clamp(p*5):0;
+  let a=A(0);if(a>0){g.save();g.globalAlpha*=a;for(let i=0;i<9;i++){const an=i/9*TAU;const x=110+Math.cos(an)*38,y=125+Math.sin(an)*38;for(let k=0;k<3;k++)circ(g,x+Math.cos(an+1.3)*k*8-6,y+Math.sin(an+1.3)*k*8,4.2,hexA(C.up,.3),C.up,1.4);}
+   box(g,240,90,110,52,hexA(C.up,.12),C.up,6,1.8);for(let k=1;k<6;k++)line(g,240+k*18,92,240+k*18,140,hexA(C.up,.6),1.2);box(g,272,142,46,64,hexA(C.up,.12),C.up,6,1.8);g.restore();pill(g,110,190,'9 × 3 MIKROTUBULI',C.up,a);pill(g,295,60,'ZENTRIOLEN-PAAR',C.up,a);}
+  a=A(1);if(a>0){g.save();g.globalAlpha*=a;blob(g,200,125,130,88,t,.02,hexA(C.pink,.06),C.pink,2);for(const x of[90,310]){box(g,x-7,118,14,14,hexA(C.up,.4),C.up,2,1.4);for(let i=0;i<5;i++)line(g,x,125,200,70+i*28,hexA(C.aqua,.6),1);}for(let i=0;i<4;i++)chromo(g,200,82+i*28,10,Math.PI/2,i%2?C.orange:C.purple);g.restore();pill(g,90,90,'POL',C.up,a);pill(g,310,90,'POL',C.up,a);}
+  a=A(2);if(a>0){g.save();g.globalAlpha*=a;for(let i=0;i<5;i++){const x=20+i*76;box(g,x,150,72,70,hexA(C.pink,.1),C.pink,6,1.6);circ(g,x+36,190,9,hexA(C.purple,.3),C.purple,1.4);for(let k=0;k<9;k++){const bx=x+6+k*7.5,ph=t*.01-bx*.04;g.strokeStyle=C.up;g.lineWidth=1.6;g.beginPath();g.moveTo(bx,150);g.quadraticCurveTo(bx+Math.sin(ph)*8,130,bx+Math.sin(ph)*14,112);g.stroke();}}
+   const f=fr(t*.0002);for(let i=0;i<6;i++)circ(g,fr(f+i/6)*400,98+Math.sin(i*2)*6,4,hexA(C.gold,.6));g.restore();pill(g,200,40,'FLIMMERHÄRCHEN IN DER LUNGE',C.up,a);pill(g,320,76,'SCHLEIM + STAUB →',C.gold,a);}
+  a=A(3);if(a>0){g.save();g.globalAlpha*=a;const hx=280;ell(g,hx,125,24,16,0,hexA(C.blue,.25),C.blue,2);box(g,hx-40,118,18,14,hexA(C.orange,.3),C.orange,4,1.4);g.strokeStyle=C.blue;g.lineWidth=2.2;g.beginPath();for(let i=0;i<=60;i++){const x=hx-40-i*3.6,y=125+Math.sin(i*.25-t*.012)*(4+i*.25);i?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();g.restore();
+   pill(g,280,80,'SPERMIUM',C.blue,a);pill(g,110,190,'GEISSEL = ANTRIEB',C.blue,a);pill(g,232,170,'MITOCHONDRIEN',C.orange,a);}
+  a=A(4);if(a>0){g.save();g.globalAlpha*=a;circ(g,200,125,70,hexA(C.up,.06),C.up,2);for(let i=0;i<9;i++){const an=i/9*TAU;const x=200+Math.cos(an)*50,y=125+Math.sin(an)*50;circ(g,x-4*Math.sin(an),y+4*Math.cos(an),6,hexA(C.up,.3),C.up,1.4);circ(g,x+4*Math.sin(an),y-4*Math.cos(an),6,hexA(C.up,.3),C.up,1.4);}circ(g,191,125,6,hexA(C.gold,.4),C.gold,1.4);circ(g,209,125,6,hexA(C.gold,.4),C.gold,1.4);g.restore();pill(g,200,30,'QUERSCHNITT: 9 + 2',C.up,a);}},
+ box:{was:'Zentriolen, Geißeln und Flimmerhärchen sind alle aus Mikrotubuli gebaut. Zentriolen helfen bei der Teilung, Geißeln und Härchen bewegen Zellen oder Flüssigkeiten.',h2:'So erkennst du sie',
+ erkennen:['<b>Zentriolen:</b> 9 Dreiergruppen, als Paar','<b>Flimmerhärchen:</b> viele kurze Härchen','<b>Geißel:</b> ein langes Härchen','<b>9 + 2:</b> typischer Querschnitt'],
+ bedeutung:'Die Flimmerhärchen in den Atemwegen sind die Putzkolonne der Lunge. Zigarettenrauch lähmt sie – darum husten Raucher den Schleim mühsam ab.',
+ tipp:'Ein Spermium schwimmt etwa 3 bis 5 Millimeter pro Minute. Für seine Größe ist das so, als würdest du mit 20 km/h schwimmen.'}});
+
+/* ---------- MEMBRAN (Paket 2) ---------- */
+les({id:'endozytose',cat:'membran',title:'Endozytose',sub:'Wie Zellen große Dinge aufnehmen',
+ steps:S([[4600,'Große Teilchen wie Bakterien passen durch keinen Kanal. Hier schwimmt ein Bakterium direkt an der Zellmembran.'],
+ [5200,'Die Membran stülpt sich nach innen und umschließt das Teilchen – wie eine Hand, die sich um einen Ball schließt.'],
+ [5000,'Die Membran schnürt sich ab. Jetzt liegt das Teilchen in einem Bläschen im Zellinneren.'],
+ [5400,'Ein Lysosom verschmilzt mit dem Bläschen. Seine Enzyme zerlegen das Bakterium in kleine Bausteine.'],
+ [5200,'Fresszellen deines Immunsystems arbeiten genau so. Der umgekehrte Weg – Stoffe nach außen abgeben – heißt Exozytose.']]),
+ draw(g,st){const{t,s,p}=st;const Y=96;
+  const d=s===0?0:s===1?ease(p)*72:0,w=lerp(46,26,s===1?ease(p):0);
+  g.save();g.strokeStyle=C.gold;g.lineWidth=11;g.lineCap='round';g.beginPath();for(let x=0;x<=400;x+=3){const y=Y+d*Math.exp(-Math.pow((x-200)/w,2));x?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();g.strokeStyle=C.bg;g.lineWidth=4;g.stroke();g.restore();
+  let by=s===0?lerp(30,74,ease(p)):s===1?74+d*.82:s===2?lerp(150,170,ease(p)):176;const bsz=s===3?1-ease(clamp((p-.3)/.7))*.85:s>3?0:1;
+  if(s>=2){const vy=s===2?by:176;g.save();g.strokeStyle=C.gold;g.lineWidth=7;g.beginPath();g.arc(200,vy,22,0,TAU);g.stroke();g.strokeStyle=C.bg;g.lineWidth=2.5;g.stroke();g.restore();}
+  if(bsz>0)bact(g,200,by,C.up,1,.3,bsz);if(s===3)for(let i=0;i<6;i++)circ(g,200+Math.cos(i+t*.004)*12*p,176+Math.sin(i*1.4+t*.004)*12*p,1.8,C.up);
+  if(s===3){const lx=lerp(320,220,ease(clamp(p*2)));circ(g,lx,190,16,hexA(C.down,.2),C.down,2);for(let i=0;i<5;i++)circ(g,lx+Math.cos(i*1.3+t*.005)*8,190+Math.sin(i*1.7)*8,1.6,C.down);}
+  pill(g,46,52,'AUSSEN',C.text,1);pill(g,46,150,'INNEN',C.text,1);pill(g,330,52,'BAKTERIUM',C.up,s<2?1:0);pill(g,330,140,'EINSTÜLPEN',C.gold,s===1?1:0);pill(g,320,176,'BLÄSCHEN',C.gold,s===2?1:0);pill(g,320,220,'LYSOSOM VERDAUT',C.down,s===3?1:0);
+  pill(g,200,236,'SO FRESSEN FRESSZELLEN BAKTERIEN',C.purple,ap(st,4),'center',10);},
+ box:{was:'Bei der Endozytose nimmt die Zelle große Teilchen oder Flüssigkeitstropfen auf, indem sie sie mit ihrer Membran umschließt.',h2:'So geht’s',
+ erkennen:['<b>Einstülpen:</b> Membran umschließt das Teilchen','<b>Abschnüren:</b> es entsteht ein Bläschen','<b>Verdauen:</b> Lysosom zerlegt den Inhalt','<b>Exozytose:</b> derselbe Weg rückwärts nach außen'],
+ bedeutung:'„Phagozytose“ (Zellfressen) nennt man es bei großen Teilchen, „Pinozytose“ (Zelltrinken) bei Flüssigkeit. Beides kostet die Zelle Energie (ATP).',
+ tipp:'Leider nutzen manche Viren diesen Weg als Hintertür: Sie lassen sich von der Zelle „fressen“ und gelangen so ins Innere.'}});
+
+les({id:'signale',cat:'membran',title:'Signale zwischen Zellen',sub:'Wie Zellen miteinander sprechen',
+ steps:S([[4800,'Eine Drüsenzelle gibt Botenstoffe ab – zum Beispiel Hormone wie Insulin.'],
+ [4800,'Die Botenstoffe reisen mit dem Blut durch den ganzen Körper.'],
+ [5600,'Nur Zellen mit dem passenden Empfänger (Rezeptor) reagieren. Botenstoff und Rezeptor passen wie Schlüssel und Schloss.'],
+ [5000,'Dockt der Botenstoff an, wird das Signal ins Innere der Zelle weitergegeben – wie eine Klingel, die drinnen läutet.'],
+ [5000,'Die Zelle reagiert: Bei Insulin öffnet sie zum Beispiel Tore und nimmt Zucker aus dem Blut auf.']]),
+ draw(g,st){const{t,s,p}=st;
+  box(g,0,110,VW,30,hexA(C.down,.08),null,0);line(g,0,110,VW,110,hexA(C.down,.5),1.2);line(g,0,140,VW,140,hexA(C.down,.5),1.2);pill(g,200,125,'BLUT',C.down,ap(st,1)*.9);
+  blob(g,50,180,42,40,t,.03,hexA(C.gold,.12),C.gold,2);nucleus(g,50,184,12,C.purple);pill(g,50,234,'DRÜSENZELLE',C.gold,1);
+  blob(g,320,58,48,36,t,.03,hexA(C.up,.1),C.up,2,1);nucleus(g,330,58,12,C.purple);blob(g,320,196,46,36,t,.03,hexA(C.mute,.1),C.mute,2,3);nucleus(g,330,196,12,C.purple,.6);
+  const a2=ap(st,2);const rcp=(x,y,ok)=>{g.save();g.globalAlpha*=Math.max(.3,a2);if(ok){line(g,x,y,x-10,y,C.up,2);line(g,x-10,y-5,x-10,y+5,C.up,2);line(g,x-10,y-5,x-16,y-5,C.up,2);line(g,x-10,y+5,x-16,y+5,C.up,2);}else{box(g,x-14,y-5,10,10,null,C.mute,2,2);}g.restore();};
+  rcp(274,52,true);rcp(272,70,true);rcp(276,190,false);
+  if(s>=0){const n=s===0?Math.floor(p*6):6;for(let i=0;i<n;i++){const f=s===0?clamp(p*2-i*.2):fr(t*.00025+i/6);let x,y;if(s<=1){x=lerp(80,380,f);y=125+Math.sin(f*12+i)*8;if(s===0){x=lerp(80,110,f);y=lerp(170,125,f);}}else{const tg=i%3===2?[260,190]:[258,i%2?70:52];x=lerp(120,tg[0],f);y=lerp(125,tg[1],ease(f));}
+   poly(g,[[x,y-5],[x+5,y+4],[x-5,y+4]],C.purple);}}
+  const a3=ap(st,3);if(a3>0){for(let k=0;k<3;k++){const r=fr(t*.0008+k/3)*40;g.save();g.globalAlpha*=a3*(1-r/40);circ(g,300,60,6+r,null,C.gold,2);g.restore();}}
+  const a4=ap(st,4);if(a4>0)flow(g,[[262,20],[312,50]],t,C.orange,{a:a4,gap:10,speed:.04,r:2.4});
+  pill(g,200,18,'BOTENSTOFF (Z. B. INSULIN)',C.purple,s===0?1:0);pill(g,190,82,'SCHLÜSSEL PASST',C.up,a2);pill(g,190,168,'KEIN PASSENDES SCHLOSS',C.mute,a2);pill(g,200,18,s===3?'SIGNAL INS INNERE':s===4?'ZELLE NIMMT ZUCKER AUF':'',s===4?C.orange:C.gold,s>=3?clamp(p*5):0);},
+ box:{was:'Zellen verständigen sich über Botenstoffe wie Hormone. Nur Zellen mit dem passenden Rezeptor empfangen die Nachricht.',h2:'So geht’s',
+ erkennen:['<b>Sender:</b> eine Zelle gibt Botenstoffe ab','<b>Weg:</b> meist über das Blut','<b>Rezeptor:</b> Schlüssel-Schloss-Prinzip','<b>Antwort:</b> die Zielzelle ändert ihr Verhalten'],
+ bedeutung:'So steuert dein Körper Hunger, Wachstum, Blutzucker und Stress. Bei Diabetes Typ 1 fehlt der Botenstoff Insulin, bei Typ 2 reagieren die Zellen schlechter darauf.',
+ tipp:'Adrenalin ist ein schneller Botenstoff: Bei Schreck wirkt er innerhalb von Sekunden auf Herz, Muskeln und Leber – dein Herz rast.'}});
+
+/* ---------- DNA (Paket 2) ---------- */
+les({id:'replikation',cat:'dna',title:'DNA-Kopie (Replikation)',sub:'Vor jeder Teilung wird die DNA verdoppelt',
+ steps:S([[4600,'Bevor sich eine Zelle teilt, muss sie ihre gesamte DNA kopieren – 3 Milliarden Basenpaare.'],
+ [5000,'Das Enzym Helikase öffnet die Doppelhelix wie einen Reißverschluss. Es entsteht eine Replikationsgabel.'],
+ [6000,'Die DNA-Polymerase läuft an jedem alten Strang entlang und setzt die passenden Basen gegenüber: A zu T, G zu C.'],
+ [5600,'So entstehen zwei DNA-Stränge. Jeder besteht aus einem alten (grau) und einem neuen Strang (orange).'],
+ [5000,'Man nennt das semikonservativ: Die Hälfte bleibt erhalten. Die Polymerase macht nur etwa einen Fehler auf eine Milliarde Basen.']]),
+ draw(g,st){const{t,s,p}=st;const seq='ATGCGTACCTAGGCATTGCAGTCAAGCTTAGC';const fx=s===0?24:s===1?lerp(24,120,ease(p)):s===2?lerp(120,250,ease(p)):s===3?lerp(250,384,ease(p)):384;
+  const old=C.steel,nw=C.orange,dx=12;
+  for(let i=0;i<32;i++){const x=12+i*12,b=seq[i];if(x>fx){line(g,x,116,x,125,bcol(b),3);line(g,x,125,x,134,bcol(COMP[b]),3);}else if(x<fx-26){line(g,x,62,x,71,bcol(b),3);line(g,x,71,x,80,bcol(COMP[b]),3);line(g,x,170,x,179,bcol(b),3);line(g,x,179,x,188,bcol(COMP[b]),3);}}
+  if(fx<384){line(g,fx,116,400,116,old,3);line(g,fx,134,400,134,old,3);}
+  if(fx>24){line(g,6,62,fx-22,62,old,3);line(g,fx-22,62,fx,116,old,3);line(g,6,188,fx-22,188,old,3);line(g,fx-22,188,fx,134,old,3);
+   const nx=fx-30;if(nx>6){line(g,6,80,nx,80,nw,3);line(g,6,170,nx,170,nw,3);}
+   if(fx<384){ell(g,fx+4,125,12,18,0,hexA(C.gold,.3),C.gold,1.8);if(nx>6){ell(g,nx,80,11,9,0,hexA(C.blue,.35),C.blue,1.6);ell(g,nx,170,11,9,0,hexA(C.blue,.35),C.blue,1.6);}}}
+  pill(g,200,18,s===0?'DNA SOLL KOPIERT WERDEN':s===1?'HELIKASE ÖFFNET':s===2?'POLYMERASE BAUT NEU':s===3?'2 × DNA: ALT + NEU':'SEMIKONSERVATIV',C.purple,clamp(p*5),'center',10);
+  pill(g,fx>330?330:fx+4,214,'HELIKASE',C.gold,s>=1&&s<=3?1:0);pill(g,80,236,'ALT',C.steel,ap(st,3));pill(g,150,236,'NEU',C.orange,ap(st,3));pill(g,290,236,'1 FEHLER PRO MRD.',C.up,ap(st,4));pill(g,Math.max(60,fx-60),104,'POLYMERASE',C.blue,s===2?1:0);},
+ box:{was:'Bei der Replikation wird die DNA verdoppelt. Jede neue DNA besteht aus einem alten und einem neuen Strang.',h2:'So geht’s',
+ erkennen:['<b>Helikase:</b> öffnet die Doppelhelix','<b>Replikationsgabel:</b> die Stelle, an der sich die DNA teilt','<b>DNA-Polymerase:</b> baut den neuen Strang','<b>Semikonservativ:</b> halb alt, halb neu'],
+ bedeutung:'Durch die genaue Kopie bekommt jede Tochterzelle bei der Mitose dieselbe Erbinformation. Die Polymerase prüft ihre Arbeit sogar selbst nach.',
+ tipp:'Der PCR-Test (z. B. bei Corona) kopiert DNA genauso – nur im Reagenzglas, in vielen Runden, bis aus wenigen Stücken Milliarden werden.'}});
+
+les({id:'mutation',cat:'dna',title:'Mutationen',sub:'Wenn sich der Bauplan ändert',
+ steps:S([[5000,'Die DNA wird in Dreiergruppen gelesen. Jede Gruppe bestimmt einen Baustein des Eiweißes.'],
+ [5400,'Eine Mutation ist eine Veränderung der DNA. Hier wird ein einziges C zu einem A – und schon entsteht ein anderer Baustein.'],
+ [5200,'Manche Mutationen sind still: Die Dreiergruppe ändert sich, aber sie steht für denselben Baustein. Dann passiert nichts.'],
+ [5200,'Ursachen sind Kopierfehler, UV-Strahlung aus der Sonne, Röntgenstrahlen und Giftstoffe wie im Zigarettenrauch.'],
+ [5400,'Reparatur-Enzyme suchen ständig nach Schäden und flicken sie. Seltene, nützliche Mutationen treiben die Evolution an.']]),
+ draw(g,st){const{t,s,p}=st;const base='ATGGCATTC';let sq=base.split(''),hl=-1;if(s===1){sq[4]='A';hl=4;}if(s===2){sq[5]='G';hl=5;}
+  const X=i=>86+i*28+Math.floor(i/3)*16;
+  for(let i=0;i<9;i++){const blink=i===hl?.55+.45*Math.sin(t*.012):1;lblock(g,X(i),100,sq[i],blink,24);if(i===hl)box(g,X(i)-15,85,30,30,null,C.down,6,2);}
+  for(let c=0;c<3;c++){line(g,X(c*3)-12,120,X(c*3+2)+12,120,C.mute,2);}
+  const code=sq.join('');const map={ATG:'MET',GCA:'ALA',GCG:'ALA',GAA:'GLU',TTC:'PHE'};const cols=[C.gold,C.up,C.pink];
+  for(let c=0;c<3;c++){const cd=code.slice(c*3,c*3+3);const aa=map[cd]||'?';const changed=s===1&&c===1;const x=X(c*3+1);line(g,x,124,x,148,C.mute,1.4);circ(g,x,166,17,hexA(changed?C.down:cols[c],.25),changed?C.down:cols[c],2);txt(g,x,167,aa,changed?C.down:cols[c],10);if(c<2)line(g,x+17,166,X(c*3+4)-17,166,C.mute,2);}
+  if(s===2)pill(g,X(4),206,'GLEICHER BAUSTEIN',C.up,1);if(s===1)pill(g,X(4),206,'ANDERER BAUSTEIN!',C.down,1);
+  const a3=ap(st,3)*(s===3?1:0);if(a3>0){sun(g,36,36,14,t,a3);flow(g,[[50,50],[150,90]],t,C.gold,{a:a3,gap:10,speed:.05,r:2});flow(g,[[54,40],[224,88]],t,C.gold,{a:a3,gap:10,speed:.05,r:2});}
+  pill(g,300,30,'UV · RÖNTGEN · RAUCH',C.gold,a3);
+  if(s===4){const ex=lerp(60,350,fr(t*.0002));ell(g,ex,100,22,26,0,hexA(C.aqua,.25),C.aqua,2);}pill(g,200,236,'REPARATUR-ENZYME FLICKEN SCHÄDEN',C.aqua,ap(st,4),'center',10);
+  pill(g,200,26,'DNA: ATG GCA TTC',C.purple,s===0?clamp(p*5):0);},
+ box:{was:'Eine Mutation ist eine dauerhafte Veränderung der DNA. Sie kann einen einzelnen Buchstaben oder ganze Abschnitte betreffen.',h2:'Arten',
+ erkennen:['<b>Punktmutation:</b> ein Buchstabe ist anders','<b>Stille Mutation:</b> gleicher Baustein, keine Wirkung','<b>Ursachen:</b> Kopierfehler, UV, Röntgen, Gifte','<b>Reparatur:</b> Enzyme flicken die meisten Schäden'],
+ bedeutung:'Die meisten Mutationen sind harmlos, manche schädlich (z. B. Krebs, Erbkrankheiten) und ganz wenige nützlich. Ohne Mutationen gäbe es keine Evolution.',
+ tipp:'Sonnenbrand ist ein Warnsignal: UV-Strahlen schädigen die DNA der Hautzellen. Sonnencreme und Schatten schützen deine DNA.'}});
+
+/* ---------- ZELLTEILUNG (Paket 2) ---------- */
+les({id:'crossingover',cat:'teilung',title:'Crossing-over',sub:'Chromosomen tauschen Stücke aus',
+ steps:S([[4800,'In der Meiose liegen die beiden Chromosomen eines Paares nebeneinander: eins von der Mutter (lila), eins vom Vater (orange).'],
+ [4800,'Sie rücken ganz eng zusammen, sodass sich ihre inneren Hälften berühren.'],
+ [5200,'An einer Stelle überkreuzen sich die Stränge. Hier brechen sie und werden über Kreuz wieder zusammengefügt.'],
+ [5200,'Ergebnis: Die beiden inneren Stränge sind jetzt gemischt – oben vom einen Elternteil, unten vom anderen.'],
+ [5400,'So entstehen immer neue Kombinationen von Genen. Deshalb ist jedes Kind einzigartig – sogar unter Geschwistern.']]),
+ draw(g,st){const{t,s,p}=st;const P0=[120,146,254,280],P1=[160,186,214,240];const f=s===0?0:s===1?ease(p):s===2?1:s===3?1-ease(p):0;const xs=P0.map((x,i)=>lerp(x,P1[i],f));
+  const sw=s>=3;const top=[C.purple,C.purple,C.orange,C.orange];const bot=sw?[C.purple,C.orange,C.purple,C.orange]:top;
+  g.save();g.lineCap='round';for(let i=0;i<4;i++){g.strokeStyle=top[i];g.lineWidth=13;g.beginPath();g.moveTo(xs[i],44);g.lineTo(xs[i],140);g.stroke();g.strokeStyle=bot[i];g.beginPath();g.moveTo(xs[i],146);g.lineTo(xs[i],210);g.stroke();}g.restore();
+  if(s===2){g.save();g.globalAlpha=.6+.4*Math.sin(t*.01);circ(g,200,143,24,null,C.gold,2.4);g.restore();g.save();g.lineCap='round';g.lineWidth=6;g.strokeStyle=C.purple;g.beginPath();g.moveTo(186,128);g.lineTo(214,158);g.stroke();g.strokeStyle=C.orange;g.beginPath();g.moveTo(214,128);g.lineTo(186,158);g.stroke();g.restore();}
+  for(let i=0;i<4;i++)for(const y of[70,110,180])circ(g,xs[i],y,2,hexA(C.text,.5));
+  pill(g,133,24,'VON DER MUTTER',C.purple,1-ap(st,1)+ap(st,3)*0);pill(g,267,24,'VOM VATER',C.orange,1-ap(st,1));
+  pill(g,200,236,s===2?'ÜBERKREUZUNG (CHIASMA)':s===3?'STÜCKE GETAUSCHT':s===4?'NEUE MISCHUNG = VIELFALT':'',s===4?C.up:C.gold,s>=2?clamp(p*5):0,'center',10);
+  if(s>=3){pill(g,xs[1],30,'GEMISCHT',C.gold,ap(st,3));}},
+ box:{was:'Beim Crossing-over tauschen die beiden Chromosomen eines Paares in der Meiose Stücke miteinander aus.',h2:'So geht’s',
+ erkennen:['<b>Paarung:</b> mütterliches und väterliches Chromosom liegen zusammen','<b>Chiasma:</b> Überkreuzungsstelle','<b>Austausch:</b> Stücke wechseln die Seite','<b>Ergebnis:</b> neu gemischte Chromosomen'],
+ bedeutung:'Zusammen mit der zufälligen Verteilung der Chromosomen sorgt das Crossing-over für fast unendlich viele Kombinationen. Darum gleicht kein Mensch dem anderen – außer eineiige Zwillinge.',
+ tipp:'Pro Chromosomenpaar passiert meist ein bis drei Mal ein Crossing-over. Dein Erbgut ist also ein Mosaik aus Stücken all deiner vier Großeltern.'}});
+
+les({id:'krebs',cat:'teilung',title:'Krebs',sub:'Wenn Zellen sich unkontrolliert teilen',
+ steps:S([[4800,'Gesunde Zellen teilen sich nur, wenn der Körper neue braucht – etwa um eine Wunde zu heilen. Bremsen im Zellzyklus sorgen dafür.'],
+ [5200,'Sammeln sich in einer Zelle mehrere Mutationen, können genau diese Bremsen ausfallen.'],
+ [5600,'Die Zelle teilt sich nun immer weiter, ohne Stopp. Es entsteht ein Klumpen aus kranken Zellen: ein Tumor.'],
+ [5400,'Bösartige Tumorzellen können sich lösen, über Blut oder Lymphe wandern und anderswo neue Tumore bilden: Metastasen.'],
+ [5400,'Viele Krebsarten lassen sich vorbeugen oder früh erkennen: nicht rauchen, Sonnenschutz, gesund leben und zur Vorsorge gehen.']]),
+ draw(g,st){const{t,s,p}=st;const cells=[];for(let r=0;r<9;r++)for(let q=0;q<15;q++){const x=18+q*26+(r%2?13:0),y=24+r*22;if(x>392)continue;cells.push([x,y,Math.hypot(x-200,y-110)]);}
+  const ord=cells.map((c,i)=>i).sort((a,b)=>cells[a][2]-cells[b][2]);const n=s<1?0:s===1?1:s===2?1+Math.floor(ease(p)*26):27;const red=new Set(ord.slice(0,n));
+  cells.forEach((c,i)=>{const r=red.has(i);const k=r?1+.12*Math.sin(t*.006+i):1;poly(g,hexPts(c[0],c[1],(r?13.5:12.5)*k),hexA(r?C.down:C.pink,r?.35:.12),r?C.down:hexA(C.pink,.7),r?1.6:1.1);circ(g,c[0]+(r?R1(i,1)*4-2:0),c[1],r?4.2:2.8,r?C.down:C.purple);});
+  if(s===1){g.save();g.globalAlpha=.5+.5*Math.sin(t*.015);circ(g,cells[ord[0]][0],cells[ord[0]][1],20,null,C.gold,2.4);g.restore();}
+  const a3=ap(st,3);if(a3>0){box(g,0,214,VW,22,hexA(C.down,.25),null,0);line(g,0,214,VW,214,C.down,1.4);for(let k=0;k<3;k++){const f=fr(t*.0002+k/3);poly(g,hexPts(lerp(200,420,f),225,7),hexA(C.down,.5),C.down,1.2);}}
+  
+  pill(g,200,236,s===0?'GESUND: TEILUNG NUR BEI BEDARF':s===1?'MUTATIONEN: BREMSEN AUS':s===2?'UNKONTROLLIERT → TUMOR':'',s===0?C.up:C.down,s<3?clamp(p*5):0,'center',10);
+  pill(g,90,200,'METASTASEN ÜBER DAS BLUT',C.down,s===3?a3:0,'center',10);
+  if(s===4)pill(g,200,236,'NICHT RAUCHEN · SONNENSCHUTZ · VORSORGE',C.up,clamp(p*5),'center',10);},
+ box:{was:'Krebs entsteht, wenn Zellen durch Mutationen die Kontrolle über ihre Teilung verlieren und sich ungebremst vermehren.',h2:'So erkennst du es',
+ erkennen:['<b>Ungebremste Teilung:</b> Zellbremsen sind ausgefallen','<b>Tumor:</b> Klumpen aus kranken Zellen','<b>Gutartig:</b> wächst langsam, bleibt an seinem Ort','<b>Bösartig:</b> wächst ein und bildet Metastasen'],
+ bedeutung:'Meist braucht es viele Mutationen über Jahre, bis Krebs entsteht. Darum steigt das Risiko mit dem Alter. Früh entdeckt ist Krebs oft gut heilbar.',
+ tipp:'Vorsorgeuntersuchungen sind in Deutschland für viele Krebsarten kostenlos, z. B. Hautkrebs-Screening ab 35 Jahren alle zwei Jahre. Frag deine Hausarztpraxis.'}});
+
+/* ---------- STOFFWECHSEL (Paket 2) ---------- */
+les({id:'gaerung',cat:'stoff',title:'Gärung',sub:'Energie ohne Sauerstoff',
+ steps:S([[4800,'Am Anfang steht wieder die Glykolyse: Zucker wird in zwei Hälften gespalten. Das bringt 2 ATP – ganz ohne Sauerstoff.'],
+ [5400,'Fehlt Sauerstoff, z. B. im Muskel beim Sprint, wird daraus Milchsäure. Auch Joghurt und Sauerkraut entstehen durch Milchsäuregärung.'],
+ [5400,'Hefe macht es anders: Sie bildet Alkohol und Kohlendioxid. Das ist die alkoholische Gärung – so entstehen Bier und Wein.'],
+ [5000,'Beim Backen lässt das Kohlendioxid der Hefe den Teig aufgehen. Der Alkohol verdampft im Ofen.'],
+ [5200,'Der Nachteil: Gärung bringt nur 2 ATP pro Zucker. Die Zellatmung mit Sauerstoff schafft etwa 30 – fünfzehnmal so viel.']]),
+ draw(g,st){const{t,s,p}=st;
+  hexa(g,40,125,17,C.up,1,'GLU');arrow(g,60,125,92,108,C.mute,1.6);arrow(g,60,125,92,142,C.mute,1.6);
+  const tri=(x,y)=>poly(g,[[x-9,y+7],[x+9,y+7],[x,y-9]],hexA(C.up,.3),C.up,1.6);tri(104,104);tri(104,146);dots(g,[[78,72],[92,72]],C.gold,4.5,1);pill(g,85,52,'+2 ATP',C.gold,1);
+  const a1=ap(st,1);if(a1>0){arrow(g,118,100,186,70,C.pink,2,a1);g.save();g.globalAlpha*=a1;box(g,190,52,110,36,hexA(C.pink,.14),C.pink,8,1.6);g.restore();}tA(g,a1,245,70,'MILCHSÄURE',C.pink,10,'center',800);pill(g,245,30,'MUSKEL · JOGHURT',C.pink,a1);
+  const a2=ap(st,2);if(a2>0){arrow(g,118,150,186,180,C.orange,2,a2);g.save();g.globalAlpha*=a2;box(g,190,162,110,36,hexA(C.orange,.14),C.orange,8,1.6);g.restore();for(let k=0;k<4;k++){const f=fr(t*.0005+k/4);circ(g,200+k*24,lerp(160,124,f),3+f*2,null,C.mute,1.2);}}
+  tA(g,a2,245,180,'ALKOHOL + CO₂',C.orange,10,'center',800);pill(g,245,220,'HEFE · BIER · WEIN',C.orange,a2);
+  const a3=ap(st,3)*(1-ap(st,4));if(a3>0){const h=lerp(20,46,s===3?ease(p):1);g.save();g.globalAlpha*=a3;g.beginPath();g.moveTo(312,200);g.lineTo(312,200-h*.5);g.quadraticCurveTo(352,200-h*1.5,392,200-h*.5);g.lineTo(392,200);g.closePath();g.fillStyle=hexA(C.orange,.4);g.fill();g.strokeStyle=C.orange;g.lineWidth=2;g.stroke();for(let i=0;i<7;i++)circ(g,322+R1(i,1)*60,195-R1(i,2)*h*.7,2.4,null,C.text,1);g.restore();}
+  pill(g,352,120,'TEIG GEHT AUF',C.orange,a3);
+  const a4=ap(st,4);if(a4>0){g.save();g.globalAlpha*=a4;box(g,322,206-8,26,8,C.pink,null,2);box(g,358,206-150,26,150,C.up,null,2);txt(g,335,186,'2',C.pink,12,'center',800);txt(g,371,46,'≈30',C.up,11,'center',800);line(g,312,206,394,206,C.mute,1.4);g.restore();}
+  tA(g,a4,335,220,'GÄRUNG',C.pink,8);tA(g,a4,371,220,'ATMUNG',C.up,8);},
+ box:{was:'Gärung ist eine Energiegewinnung ohne Sauerstoff. Sie liefert schnell etwas Energie, aber viel weniger als die Zellatmung.',h2:'Zwei Arten',
+ erkennen:['<b>Milchsäuregärung:</b> Muskeln, Joghurt, Sauerkraut','<b>Alkoholische Gärung:</b> Hefe – Bier, Wein, Brot','Beide starten mit der <b>Glykolyse</b>','Nur <b>2 ATP</b> pro Zucker'],
+ bedeutung:'Darum kannst du nur kurz sprinten: Ohne genug Sauerstoff schalten die Muskeln auf Gärung um, Milchsäure sammelt sich an und die Kraft lässt nach.',
+ tipp:'Muskelkater kommt übrigens nicht von der Milchsäure, sondern von winzigen Rissen in den Muskelfasern. Die Milchsäure ist nach etwa einer Stunde wieder abgebaut.'}});
+
+/* ---------- ZELLEN IM KÖRPER ---------- */
+les({id:'nervenzelle',cat:'koerper',title:'Die Nervenzelle',sub:'Datenkabel des Körpers',
+ steps:S([[5000,'Eine Nervenzelle hat einen Zellkörper mit vielen Verästelungen: den Dendriten. Sie empfangen Signale von anderen Zellen.'],
+ [4800,'Vom Zellkörper geht ein langer Fortsatz ab: das Axon. Es leitet das Signal weiter – manchmal über einen Meter weit.'],
+ [5000,'Viele Axone sind von einer Fettschicht umwickelt, der Myelinscheide. Sie isoliert wie die Hülle eines Stromkabels.'],
+ [5200,'Das elektrische Signal springt von Lücke zu Lücke. So rast es mit bis zu 120 Metern pro Sekunde durch den Nerv.'],
+ [5400,'Am Ende sitzt die Synapse. Dort gibt die Zelle Botenstoffe ab, die das Signal zur nächsten Zelle übertragen.']]),
+ draw(g,st){const{t,s,p}=st;
+  neuronBody(g,62,125,15,C.lime);pill(g,62,40,'DENDRITEN',C.lime,1);
+  const a1=ap(st,1);const ax1=78,ax2=338;if(a1>0){g.save();g.globalAlpha*=a1;line(g,ax1,125,ax2,125,C.lime,3);for(let i=0;i<4;i++){const an=-.6+i*.4;line(g,ax2,125,ax2+Math.cos(an)*30,125+Math.sin(an)*30,C.lime,2);circ(g,ax2+Math.cos(an)*32,125+Math.sin(an)*32,4,C.lime);}g.restore();}
+  pill(g,200,88,'AXON',C.lime,a1*(s<2?1:0));
+  const a2=ap(st,2),nodes=[];for(let k=0;k<7;k++){const x=96+k*34;nodes.push(x);if(a2>0){g.save();g.globalAlpha*=a2;box(g,x+3,114,28,22,hexA(C.gold,.3),C.gold,10,1.6);g.restore();}}
+  pill(g,200,88,'MYELINSCHEIDE',C.gold,a2*(s===2?1:0));
+  const a3=ap(st,3);if(a3>0&&s>=3){const f=fr(t*.0006);const k=Math.floor(f*8);const x=k<7?nodes[k]:ax2;g.save();g.globalAlpha*=a3;circ(g,x,125,9,hexA(C.aqua,.4),C.aqua,2);circ(g,x,125,16,null,hexA(C.aqua,.4),1.4);g.restore();}
+  pill(g,200,88,'BIS 120 m/s',C.aqua,s===3?a3:0);
+  const a4=ap(st,4);if(a4>0){g.save();g.globalAlpha*=a4;box(g,378,80,22,90,hexA(C.pink,.15),C.pink,8,1.6);for(let i=0;i<8;i++){const f=fr(t*.0006+i/8);circ(g,lerp(368,380,f),100+i*7,2,C.gold);}g.restore();}
+  pill(g,330,206,'SYNAPSE → NÄCHSTE ZELLE',C.pink,a4);pill(g,62,190,'ZELLKÖRPER',C.lime,1);},
+ box:{was:'Nervenzellen (Neuronen) leiten Informationen als elektrische Signale weiter. Dein Gehirn besteht aus etwa 86 Milliarden davon.',h2:'So erkennst du sie',
+ erkennen:['<b>Dendriten:</b> Empfangsantennen','<b>Zellkörper:</b> mit Zellkern','<b>Axon:</b> langes Kabel, bis über 1 m','<b>Myelinscheide:</b> Isolierung · <b>Synapse:</b> Übergabestelle'],
+ bedeutung:'Jede Bewegung, jedes Gefühl und jeder Gedanke ist ein Muster aus Nervensignalen. Nervenzellen teilen sich kaum noch – verlorene werden meist nicht ersetzt.',
+ tipp:'Ein Reflex (z. B. Hand von der heißen Herdplatte ziehen) läuft über das Rückenmark und ist darum schneller, als du denken kannst.'}});
+
+les({id:'muskelzelle',cat:'koerper',title:'Die Muskelzelle',sub:'Wie aus ATP Bewegung wird',
+ steps:S([[5000,'Eine Skelettmuskelzelle ist eine lange Faser – oft mehrere Zentimeter lang – mit vielen Zellkernen.'],
+ [5200,'Innen liegen Bündel aus zwei Eiweißfäden: dünnes Aktin und dickes Myosin. Sie sind in kleinen Abschnitten angeordnet.'],
+ [5600,'Bei einem Nervensignal ziehen die Myosin-Köpfchen am Aktin. Die Fäden gleiten ineinander – der Abschnitt wird kürzer.'],
+ [5000,'Jeder Ruck der Köpfchen kostet ein ATP. Darum brauchen Muskeln so viel Energie und haben viele Mitochondrien.'],
+ [5000,'Es gibt drei Muskelarten: Skelettmuskeln (willkürlich), den Herzmuskel und glatte Muskeln in Darm und Blutgefäßen.']]),
+ draw(g,st){const{t,s,p}=st;
+  box(g,24,34,352,40,hexA(C.down,.14),C.down,20,2);for(let i=0;i<34;i++)line(g,34+i*10,38,34+i*10,70,hexA(C.down,.35),1);for(let i=0;i<5;i++)ell(g,60+i*68,54,8,4,0,hexA(C.purple,.5),C.purple,1.2);
+  pill(g,200,18,'MUSKELFASER · VIELE ZELLKERNE',C.down,1);
+  const a1=ap(st,1);const c=s>=2?(s===2||s===3?(Math.sin(t*.003)+1)/2:0):0;const L=lerp(140,104,c);
+  if(a1>0){g.save();g.globalAlpha*=a1;const zl=200-L,zr=200+L;line(g,zl,108,zl,212,C.text,3);line(g,zr,108,zr,212,C.text,3);
+   for(const y of[118,146,174,202]){line(g,zl,y,zl+92,y,C.blue,2.4);line(g,zr,y,zr-92,y,C.blue,2.4);}
+   for(const y of[132,160,188]){line(g,138,y,262,y,C.orange,6);for(let x=144;x<=256;x+=12){if(Math.abs(x-200)<10)continue;const sg=x<200?-1:1;const k=Math.sin(t*.02+x)*(s>=2?2:0);line(g,x,y-3,x+sg*(5+k),y-11,C.orange,1.6);line(g,x,y+3,x+sg*(5+k),y+11,C.orange,1.6);}}
+   g.restore();}
+  pill(g,72,96,'AKTIN',C.blue,a1);pill(g,328,96,'MYOSIN',C.orange,a1);pill(g,200,236,'FÄDEN GLEITEN → MUSKEL WIRD KÜRZER',C.gold,s===2?1:0,'center',10);
+  const a3=ap(st,3);if(s===3){for(let i=0;i<6;i++){const f=fr(t*.0008+i/6);g.save();g.globalAlpha*=1-f;circ(g,150+i*20,146-f*30,3.4,C.gold);g.restore();}}pill(g,200,236,'JEDER RUCK KOSTET 1 ATP',C.gold,s===3?a3:0,'center',10);
+  pill(g,200,236,'SKELETT · HERZ · GLATTE MUSKELN',C.down,ap(st,4),'center',10);},
+ box:{was:'Muskelzellen können sich zusammenziehen. Dafür gleiten zwei Eiweißfäden – Aktin und Myosin – ineinander.',h2:'So erkennst du sie',
+ erkennen:['<b>Lange Fasern</b> mit vielen Zellkernen','<b>Querstreifen</b> durch Aktin und Myosin','<b>Viele Mitochondrien</b> für ATP','<b>Drei Arten:</b> Skelett-, Herz-, glatte Muskulatur'],
+ bedeutung:'Ein Muskel kann nur ziehen, nicht drücken. Darum arbeiten Muskeln immer paarweise als Gegenspieler – zum Beispiel Bizeps und Trizeps am Arm.',
+ tipp:'Dein Herzmuskel schlägt etwa 100.000 Mal am Tag – ein Leben lang, ohne Pause. Er ist besonders reich an Mitochondrien.'}});
+
+les({id:'blutzellen',cat:'koerper',title:'Blutzellen',sub:'Transport, Abwehr und Wundverschluss',
+ steps:S([[5000,'Rote Blutzellen sind am häufigsten: etwa 5 Millionen in jedem Mikroliter Blut. Sie transportieren Sauerstoff mit dem roten Farbstoff Hämoglobin.'],
+ [5000,'Weiße Blutzellen sind größer und seltener. Sie gehören zum Immunsystem und bekämpfen Krankheitserreger.'],
+ [4800,'Blutplättchen sind winzige Zellbruchstücke. Sie sind für die Blutgerinnung zuständig.'],
+ [5000,'Alle schwimmen im Blutplasma: einer gelblichen Flüssigkeit aus Wasser, Nährstoffen, Salzen und Botenstoffen.'],
+ [5600,'Bei einer Verletzung kleben die Blutplättchen am Riss zusammen. Ein Netz aus Fäden (Fibrin) fängt rote Blutzellen ein – die Wunde schließt sich.']]),
+ draw(g,st){const{t,s,p}=st;const a3=ap(st,3);
+  box(g,0,58,VW,134,hexA(C.gold,.04+.08*a3),null,0);line(g,0,58,VW,58,C.down,3);
+  const gapA=ap(st,4);g.save();g.strokeStyle=C.down;g.lineWidth=3;g.beginPath();g.moveTo(0,192);g.lineTo(s===4?180:400,192);g.stroke();if(s===4){g.beginPath();g.moveTo(220,192);g.lineTo(400,192);g.stroke();}g.restore();
+  const sp=s===4?.25:1;for(let i=0;i<26;i++){const x=fr(R1(i,1)+t*.00008*sp)*440-20,y=72+R1(i,2)*108;rbc(g,x,y,8.5,C.down,.8+.2*Math.sin(t*.003+i));}
+  const a1=ap(st,1);for(let i=0;i<3;i++){const x=fr(R1(i,5)+t*.00005*sp)*440-20,y=80+R1(i,6)*90;g.save();g.globalAlpha*=a1;circ(g,x,y,14,hexA(C.purple,.25),C.purple,1.6);for(let k=0;k<3;k++)circ(g,x-5+k*5,y+Math.sin(k*2)*3,3.4,C.purple);g.restore();}
+  const a2=ap(st,2);for(let i=0;i<10;i++){const x=s===4?lerp(fr(R1(i,7)+t*.00008)*440-20,190+R1(i,8)*20,ease(p)):fr(R1(i,7)+t*.00008)*440-20,y=s===4?lerp(70+R1(i,9)*110,186+R1(i,3)*8,ease(p)):70+R1(i,9)*110;g.save();g.globalAlpha*=a2;ell(g,x,y,3.2,2,i,C.gold);g.restore();}
+  if(s===4&&p>.4){g.save();g.globalAlpha*=clamp((p-.4)*3);g.strokeStyle=C.text;g.lineWidth=.8;for(let i=0;i<8;i++){line(g,176+i*6,176,184+i*5,206,hexA(C.text,.6),.8);}g.restore();}
+  pill(g,90,28,'ROTE BLUTZELLEN',C.down,1);pill(g,250,28,'WEISSE BLUTZELLEN',C.purple,a1*(s<3?1:0));pill(g,250,28,'PLASMA: WASSER + NÄHRSTOFFE',C.gold,s===3?a3:0,'center',10);
+  pill(g,80,222,'BLUTPLÄTTCHEN',C.gold,a2);pill(g,300,222,'WUNDE SCHLIESST SICH',C.up,gapA);},
+ box:{was:'Blut besteht zu etwa 55 % aus flüssigem Plasma und zu 45 % aus Zellen: roten und weißen Blutzellen sowie Blutplättchen.',h2:'So erkennst du sie',
+ erkennen:['<b>Rote Blutzellen:</b> Scheiben ohne Kern, transportieren Sauerstoff','<b>Weiße Blutzellen:</b> größer, mit Kern, Abwehr','<b>Blutplättchen:</b> winzig, Gerinnung','<b>Plasma:</b> die Flüssigkeit, in der alles schwimmt'],
+ bedeutung:'Ein Erwachsener hat etwa 5 bis 6 Liter Blut. Ein Blutbild beim Arzt zählt die Zellen – so lassen sich viele Krankheiten erkennen.',
+ tipp:'Eine Blutspende hilft bis zu drei Menschen. Die roten Blutzellen bildet dein Körper in etwa vier bis acht Wochen nach.'}});
+
+les({id:'immunzellen',cat:'koerper',title:'Immunzellen',sub:'Die Abwehrtruppe deines Körpers',
+ steps:S([[4600,'Durch eine kleine Wunde dringen Bakterien in den Körper ein.'],
+ [5200,'Als Erstes kommen Fresszellen (Makrophagen). Sie umschließen die Bakterien und verdauen sie.'],
+ [5400,'B-Zellen bilden Antikörper: Y-förmige Eiweiße, die genau auf einen Erreger passen und ihn markieren.'],
+ [5200,'Killer-T-Zellen erkennen Körperzellen, die von Viren befallen sind, und zerstören sie samt den Viren.'],
+ [5400,'Gedächtniszellen merken sich den Erreger jahrelang. Beim nächsten Mal geht die Abwehr viel schneller – darauf beruht die Impfung.']]),
+ draw(g,st){const{t,s,p}=st;
+  const bpos=[[300,60],[340,96],[290,120],[350,150],[310,180],[260,84]];
+  const eaten=s>=1?(s===1?Math.floor(ease(p)*2.99):2):0;
+  const mx=s===0?40:s===1?lerp(40,150,ease(clamp(p*1.4))):150;blob(g,mx,96,40,32,t,.08,hexA(C.purple,.15),C.purple,2.2);nucleus(g,mx-10,96,10,C.purple);
+  bpos.forEach((q,i)=>{let x=q[0]+Math.sin(t*.002+i)*4,y=q[1]+Math.cos(t*.0023+i)*4;if(i<eaten){x=mx+8+i*10;y=96+(i%2?8:-8);}if(s===0){x=lerp(400,q[0],ease(clamp(p*1.5-i*.08)));}bact(g,x,y,C.up,1,i*.7);
+   if(s>=2&&i>=eaten){const a=s===2?clamp(p*2-i*.15):1;ab(g,x-12,y-10,6,-.7,C.blue,a);ab(g,x+12,y+10,6,2.4,C.blue,a);}});
+  const a2=ap(st,2);if(a2>0){g.save();g.globalAlpha*=a2;blob(g,60,196,26,24,t,.04,hexA(C.blue,.15),C.blue,2,2);nucleus(g,60,196,10,C.blue);for(let k=0;k<4;k++){const f=fr(t*.0004+k/4);ab(g,lerp(90,250,f),lerp(190,150,f),6,f*6,C.blue);}g.restore();}
+  const a3=ap(st,3);if(a3>0){g.save();g.globalAlpha*=a3;const ix=200,iy=210;blob(g,ix,iy,26,22,t,.04,hexA(C.pink,.15),C.pink,2,4);for(let k=0;k<6;k++)poly(g,hexPts(ix+Math.cos(k)*12,iy+Math.sin(k*1.5)*9,3),C.orange);
+   const tx=s===3?lerp(380,236,ease(p)):236;circ(g,tx,210,16,hexA(C.aqua,.25),C.aqua,2);circ(g,tx,210,6,C.aqua);if(s===3&&p>.7){for(let i=0;i<8;i++){const an=i/8*TAU;line(g,ix+Math.cos(an)*28,iy+Math.sin(an)*24,ix+Math.cos(an)*36,iy+Math.sin(an)*31,C.aqua,1.6);}}g.restore();}
+  pill(g,200,18,s===0?'BAKTERIEN DRINGEN EIN':s===1?'FRESSZELLE (MAKROPHAGE)':s===2?'B-ZELLEN: ANTIKÖRPER':s===3?'KILLER-T-ZELLE':'GEDÄCHTNISZELLEN → IMPFUNG',[C.up,C.purple,C.blue,C.aqua,C.gold][s],clamp(p*5),'center',10);
+  pill(g,mx,142,'FRESSZELLE',C.purple,ap(st,1));pill(g,60,236,'B-ZELLE',C.blue,a2);pill(g,320,236,'T-ZELLE',C.aqua,a3);
+  if(s===4){g.save();g.globalAlpha*=clamp(p*4);circ(g,380,40,13,hexA(C.gold,.25),C.gold,2);txt(g,380,41,'★',C.gold,11);g.restore();}},
+ box:{was:'Das Immunsystem ist die Abwehr deines Körpers. Verschiedene weiße Blutzellen arbeiten zusammen wie eine Truppe mit Spezialisten.',h2:'Die Abwehrtruppe',
+ erkennen:['<b>Fresszellen:</b> fressen Erreger sofort','<b>B-Zellen:</b> bilden Antikörper','<b>Killer-T-Zellen:</b> zerstören befallene Zellen','<b>Gedächtniszellen:</b> merken sich Erreger'],
+ bedeutung:'Fieber ist oft ein Zeichen, dass das Immunsystem arbeitet: Die höhere Temperatur bremst Erreger und beschleunigt die Abwehr.',
+ tipp:'Eine Impfung zeigt dem Immunsystem einen harmlosen Steckbrief des Erregers. So entstehen Gedächtniszellen, ohne dass du krank wirst.'}});
+
 /* ============ Reihenfolge nach Bereichen ============ */
 {const ord=Object.keys(CATS);LESSONS.sort((a,b)=>ord.indexOf(a.cat)-ord.indexOf(b.cat));}
 /* ============ Player ============ */
@@ -803,19 +1143,21 @@ function markSeen(id){if(seen[id])return;seen[id]=1;try{localStorage.setItem(KEY
 function updProg(){const n=LESSONS.filter(l=>seen[l.id]).length;document.getElementById('progtxt').textContent=`${n} / ${LESSONS.length}`;document.getElementById('progbar').style.width=(n/LESSONS.length*100)+'%';}
 
 const CATINFO={
- grundlagen:{d:'Was eine Zelle ist, wie klein sie ist, das Mikroskop, Tier- und Pflanzenzelle sowie Bakterien.',acc:'var(--blue)',hex:'#4c9aff'},
- organellen:{d:'Zellkern, Mitochondrien, Ribosomen & ER, Golgi-Apparat und Chloroplasten.',acc:'var(--orange)',hex:'#ff9f43'},
- membran:{d:'Aufbau der Zellmembran, Diffusion, Osmose und aktiver Transport.',acc:'var(--aqua)',hex:'#22d3ee'},
- dna:{d:'DNA, Chromosomen und Gene, Transkription und Translation.',acc:'var(--purple)',hex:'#b388ff'},
- teilung:{d:'Zellzyklus, Mitose und Meiose.',acc:'var(--pink)',hex:'#ff6fae'},
- stoff:{d:'ATP als Energieträger, Zellatmung und Fotosynthese.',acc:'var(--up)',hex:'#1fcf8f'}};
+ grundlagen:{d:'Was eine Zelle ist, Größen, Mikroskop, Tier-, Pflanzen- und Pilzzellen, Bakterien und Stammzellen.',acc:'var(--blue)',hex:'#4c9aff'},
+ organellen:{d:'Zellkern, Mitochondrien, Ribosomen & ER, Golgi, Chloroplasten, Zellskelett, Vakuole und Geißeln.',acc:'var(--orange)',hex:'#ff9f43'},
+ membran:{d:'Zellmembran, Diffusion, Osmose, aktiver Transport, Endozytose und Signale zwischen Zellen.',acc:'var(--aqua)',hex:'#22d3ee'},
+ dna:{d:'DNA, Chromosomen und Gene, Transkription, Translation, DNA-Kopie und Mutationen.',acc:'var(--purple)',hex:'#b388ff'},
+ teilung:{d:'Zellzyklus, Mitose, Meiose, Crossing-over und Krebs.',acc:'var(--pink)',hex:'#ff6fae'},
+ stoff:{d:'ATP als Energieträger, Zellatmung, Fotosynthese und Gärung.',acc:'var(--up)',hex:'#1fcf8f'},
+ koerper:{d:'Nervenzelle, Muskelzelle, Blutzellen und Immunzellen – Spezialisten in deinem Körper.',acc:'var(--lime)',hex:'#a3e635'}};
 const SVGI={
  grundlagen:'<path d="M32 6 C48 6 58 16 58 32 C58 48 47 58 32 58 C16 58 6 47 6 32 C6 16 17 6 32 6 Z" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="32" r="10" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="35" cy="29" r="3.5" fill="currentColor"/><circle cx="16" cy="40" r="2" fill="currentColor"/><circle cx="46" cy="20" r="2" fill="currentColor"/><circle cx="45" cy="44" r="2" fill="currentColor"/>',
  organellen:'<ellipse cx="32" cy="32" rx="26" ry="15" fill="none" stroke="currentColor" stroke-width="3"/><path d="M14 32 L14 24 M20 32 L20 42 M26 32 L26 21 M32 32 L32 43 M38 32 L38 21 M44 32 L44 42 M50 32 L50 24" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>',
  membran:'<g fill="currentColor"><circle cx="10" cy="18" r="4"/><circle cx="22" cy="18" r="4"/><circle cx="34" cy="18" r="4"/><circle cx="46" cy="18" r="4"/><circle cx="58" cy="18" r="4"/><circle cx="10" cy="46" r="4"/><circle cx="22" cy="46" r="4"/><circle cx="34" cy="46" r="4"/><circle cx="46" cy="46" r="4"/><circle cx="58" cy="46" r="4"/></g><g stroke="currentColor" stroke-width="2.2"><path d="M8 22 V30 M12 22 V30 M20 22 V30 M24 22 V30 M32 22 V30 M36 22 V30 M44 22 V30 M48 22 V30 M56 22 V30 M60 22 V30 M8 34 V42 M12 34 V42 M20 34 V42 M24 34 V42 M32 34 V42 M36 34 V42 M44 34 V42 M48 34 V42 M56 34 V42 M60 34 V42"/></g>',
  dna:'<path d="M16 4 C16 20 48 20 48 32 C48 44 16 44 16 60" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M48 4 C48 20 16 20 16 32 C16 44 48 44 48 60" fill="none" stroke="currentColor" stroke-width="3.2"/><g stroke="currentColor" stroke-width="2.4"><line x1="21" y1="10" x2="43" y2="10"/><line x1="26" y1="24" x2="38" y2="24"/><line x1="26" y1="40" x2="38" y2="40"/><line x1="21" y1="54" x2="43" y2="54"/></g>',
  teilung:'<path d="M32 12 C22 6 6 10 6 32 C6 54 22 58 32 52 C42 58 58 54 58 32 C58 10 42 6 32 12 Z" fill="none" stroke="currentColor" stroke-width="3"/><line x1="32" y1="14" x2="32" y2="50" stroke="currentColor" stroke-width="2" stroke-dasharray="3 3"/><circle cx="19" cy="32" r="6" fill="currentColor"/><circle cx="45" cy="32" r="6" fill="currentColor"/>',
- stoff:'<path d="M36 4 L14 36 H30 L26 60 L50 26 H34 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>'};
+ stoff:'<path d="M36 4 L14 36 H30 L26 60 L50 26 H34 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>',
+ koerper:'<circle cx="18" cy="32" r="8" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="18" cy="32" r="3" fill="currentColor"/><g stroke="currentColor" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M12 26 L4 16 M12 38 L4 48 M18 24 L16 10 M18 40 L16 54"/><path d="M26 32 H50"/><path d="M50 32 L58 24 M50 32 L58 40 M50 32 L60 32"/></g><g fill="currentColor"><rect x="29" y="28" width="7" height="8" rx="3"/><rect x="39" y="28" width="7" height="8" rx="3"/></g>'};
 const catIcon=(ck,s=58)=>`<svg width="${s}" height="${s}" viewBox="0 0 64 64" style="color:${CATINFO[ck].acc}">${SVGI[ck]}</svg>`;
 
 /* ============ Liste (Seitenleiste) ============ */
@@ -882,7 +1224,7 @@ function showHome(){
   return `<button class="big" data-h="kat-${ck}" style="--acc:${ci.acc};--glow:${hexA(ci.hex,.16)}"><div class="bi">${catIcon(ck)}</div><h2>${CATS[ck]}</h2><p>${ci.d}</p><div class="ft"><span>${n} LEKTIONEN</span><div class="pb"><i style="width:${sn/n*100}%"></i></div><span>${sn}/${n}</span><span class="go">›</span></div></button>`;}).join('');
  const quiz=`<button class="big" data-h="quiz" style="--acc:var(--gold);--glow:rgba(245,197,66,.14)"><div class="bi" style="font-size:46px;line-height:1">🎯</div><h2>Quiz</h2><p>Teste dein Wissen: 10 zufällige Fragen mit Bildern und Rechenaufgaben.</p><div class="ft"><span>${best?`BESTWERT ${best}/10`:'NOCH NICHT GESPIELT'}</span><span style="flex:1"></span><span class="go">›</span></div></button>`;
  view.innerHTML=`<div class="home"><div class="kicker">Willkommen</div><h1>So funktioniert eine Zelle</h1>
- <p class="lead">Jede Lektion ist ein kleines Video: Zellkern, Mitochondrien, Membran, DNA, Zellteilung und Stoffwechsel bauen sich Schritt für Schritt auf und werden erklärt.</p>
+ <p class="lead">Jede Lektion ist ein kleines Video: Zellkern, Mitochondrien, Membran, DNA, Zellteilung, Stoffwechsel und die Zellen deines Körpers bauen sich Schritt für Schritt auf und werden erklärt.</p>
  <div class="bigtiles">${tiles}${quiz}</div></div>`;
  view.querySelectorAll('.big').forEach(t=>t.onclick=()=>location.hash=t.dataset.h);
  renderList();window.scrollTo(0,0);
@@ -981,6 +1323,54 @@ const PQ=[
  {l:'osmose',s:2,p:.95,q:'Warum ist der Wasserspiegel rechts gestiegen?',a:['Wasser wandert durch Osmose zum Salz','Das Salz ist geschmolzen','Es hat geregnet','Die Membran ist kaputt'],e:'Die Membran lässt Wasser durch, aber kein Salz.'},
  {l:'chromosom',s:3,p:.9,q:'Was ist rechts zu sehen?',a:['Ein Chromosom','Ein Mitochondrium','Eine Zelle','Ein Ribosom'],e:'Dicht verpackte DNA in X-Form.'}
 ];
+TQ.push(
+ {q:'Woraus besteht die Zellwand von Pilzen?',a:['Aus Chitin','Aus Zellulose','Aus Kalk','Aus Fett'],e:'Chitin steckt auch im Panzer von Insekten.',l:'pilzzelle'},
+ {q:'Wie vermehrt sich Hefe?',a:['Durch Knospung','Durch Fotosynthese','Durch Samen','Durch Sporen in Blüten'],e:'Eine kleine Tochterzelle wächst seitlich heraus.',l:'pilzzelle'},
+ {q:'Warum geht Brotteig mit Hefe auf?',a:['Die Hefe bildet Kohlendioxid','Die Hefe bildet Sauerstoff','Das Mehl quillt durch Wärme','Das Salz bläht ihn auf'],e:'Die Gasbläschen machen den Teig luftig.',l:'gaerung'},
+ {q:'Was können Stammzellen besonders gut?',a:['Sich selbst erneuern und spezialisieren','Licht einfangen','Strom leiten','Sauerstoff transportieren'],e:'Aus ihnen entstehen spezialisierte Zellen.',l:'stammzellen'},
+ {q:'Wo bilden Stammzellen ständig neues Blut?',a:['Im Knochenmark','Im Herzen','In der Lunge','Im Magen'],e:'Mehrere Millionen Blutzellen pro Sekunde.',l:'stammzellen'},
+ {q:'Wozu dienen Mikrotubuli?',a:['Als Schienen für den Transport in der Zelle','Als Energiespeicher','Zur Fotosynthese','Als Zellwand'],e:'Motor-Eiweiße laufen auf ihnen entlang.',l:'zellskelett'},
+ {q:'Woraus bestehen Haare und Fingernägel vor allem?',a:['Keratin (Intermediärfilament)','Zellulose','Chitin','Stärke'],e:'Keratin ist ein besonders zähes Fasereiweiß.',l:'zellskelett'},
+ {q:'Was ist der Turgor?',a:['Der Innendruck der Vakuole gegen die Zellwand','Ein Zellgift','Eine Zellteilung','Ein Farbstoff'],e:'Er hält Pflanzen straff.',l:'vakuole'},
+ {q:'Warum welkt eine Pflanze ohne Wasser?',a:['Die Vakuolen schrumpfen, der Druck fehlt','Die Chloroplasten platzen','Die Zellkerne lösen sich auf','Die Wurzeln wachsen zu schnell'],e:'Ohne Turgor hängen die Blätter.',l:'vakuole'},
+ {q:'Welches Muster haben Geißeln im Querschnitt?',a:['9 + 2','4 + 4','2 + 2','10 + 1'],e:'Neun Doppelröhren außen, zwei in der Mitte.',l:'zentriolen'},
+ {q:'Was machen die Flimmerhärchen in den Atemwegen?',a:['Sie schieben Schleim und Staub nach oben','Sie nehmen Sauerstoff auf','Sie bilden Blut','Sie verdauen Fett'],e:'Sie sind die Putzkolonne der Lunge.',l:'zentriolen'},
+ {q:'Wie nimmt eine Zelle ein ganzes Bakterium auf?',a:['Durch Endozytose (Einstülpen der Membran)','Durch einen Ionenkanal','Durch Diffusion','Durch Osmose'],e:'Die Membran umschließt es und schnürt ein Bläschen ab.',l:'endozytose'},
+ {q:'Wie heißt der Weg, Stoffe in Bläschen nach außen abzugeben?',a:['Exozytose','Endozytose','Osmose','Replikation'],e:'Das Bläschen verschmilzt mit der Membran.',l:'endozytose'},
+ {q:'Warum reagiert nicht jede Zelle auf ein Hormon?',a:['Nur Zellen mit passendem Rezeptor reagieren','Hormone sind zu groß','Weil das Blut sie filtert','Weil Zellen schlafen'],e:'Schlüssel-Schloss-Prinzip.',l:'signale'},
+ {q:'Welches Hormon sorgt dafür, dass Zellen Zucker aufnehmen?',a:['Insulin','Adrenalin','Melatonin','Testosteron'],e:'Bei Diabetes ist dieses System gestört.',l:'signale'},
+ {q:'Welches Enzym öffnet die DNA bei der Replikation?',a:['Helikase','Polymerase','Amylase','Lipase'],e:'Sie wirkt wie ein Reißverschluss-Öffner.',l:'replikation'},
+ {q:'Was bedeutet „semikonservativ“?',a:['Jede neue DNA ist halb alt, halb neu','Die DNA wird ganz neu gebaut','Die alte DNA wird zerstört','Nur die Hälfte wird kopiert'],e:'Ein Strang bleibt immer erhalten.',l:'replikation'},
+ {q:'Was ist eine stille Mutation?',a:['Eine Änderung ohne Auswirkung auf das Eiweiß','Eine Mutation ohne Ursache','Eine Mutation im Schlaf','Eine tödliche Mutation'],e:'Das neue Codon steht für denselben Baustein.',l:'mutation'},
+ {q:'Was schädigt die DNA der Hautzellen besonders?',a:['UV-Strahlung','Wasser','Sauerstoff','Kälte'],e:'Sonnenschutz schützt deine DNA.',l:'mutation'},
+ {q:'Was passiert beim Crossing-over?',a:['Chromosomen eines Paares tauschen Stücke','Zellen verschmelzen','DNA wird kopiert','Ribosomen bauen Eiweiß'],e:'Es entsteht eine neue Mischung von Genen.',l:'crossingover'},
+ {q:'In welcher Zellteilung findet Crossing-over statt?',a:['In der Meiose','In der Mitose','Bei der Knospung','Bei der Endozytose'],e:'Es macht Keimzellen noch vielfältiger.',l:'crossingover'},
+ {q:'Was sind Metastasen?',a:['Tochtergeschwülste an anderer Stelle im Körper','Gesunde Stammzellen','Teile des Zellkerns','Abwehrzellen'],e:'Tumorzellen wandern über Blut oder Lymphe.',l:'krebs'},
+ {q:'Wie entsteht Krebs?',a:['Durch Mutationen, die die Teilungsbremsen ausschalten','Durch zu viel Wasser','Durch Ansteckung beim Händeschütteln','Durch Kälte'],e:'Die Zelle teilt sich dann unkontrolliert.',l:'krebs'},
+ {q:'Wie viel ATP liefert die Gärung pro Zucker?',a:['2 ATP','30 ATP','100 ATP','0 ATP'],e:'Nur die Glykolyse liefert Energie.',l:'gaerung'},
+ {q:'Was entsteht bei der Milchsäuregärung im Muskel?',a:['Milchsäure (Laktat)','Alkohol','Sauerstoff','Zucker'],e:'Sie entsteht bei Sauerstoffmangel, z. B. beim Sprint.',l:'gaerung'},
+ {q:'Wie heißt der lange Fortsatz einer Nervenzelle?',a:['Axon','Dendrit','Synapse','Zellkern'],e:'Er leitet das Signal weiter – bis über 1 m.',l:'nervenzelle'},
+ {q:'Wozu dient die Myelinscheide?',a:['Sie isoliert und macht das Signal schneller','Sie speichert Zucker','Sie bildet Blut','Sie empfängt Signale'],e:'Das Signal springt von Lücke zu Lücke.',l:'nervenzelle'},
+ {q:'Wie heißt die Übergabestelle zwischen zwei Nervenzellen?',a:['Synapse','Pore','Vakuole','Centriole'],e:'Dort übertragen Botenstoffe das Signal.',l:'nervenzelle'},
+ {q:'Welche Eiweißfäden lassen den Muskel kürzer werden?',a:['Aktin und Myosin','Keratin und Chitin','Kollagen und Zellulose','Histone und DNA'],e:'Sie gleiten ineinander.',l:'muskelzelle'},
+ {q:'Welche drei Muskelarten gibt es?',a:['Skelett-, Herz- und glatte Muskulatur','Arm-, Bein- und Bauchmuskulatur','Rote, weiße und gelbe Muskulatur','Kurze, lange und runde Muskulatur'],e:'Glatte Muskeln sitzen z. B. im Darm.',l:'muskelzelle'},
+ {q:'Was transportieren rote Blutzellen?',a:['Sauerstoff','Antikörper','Hormone','Fett'],e:'Mit dem roten Farbstoff Hämoglobin.',l:'blutzellen'},
+ {q:'Wofür sind Blutplättchen zuständig?',a:['Für die Blutgerinnung','Für den Sauerstofftransport','Für die Verdauung','Für das Sehen'],e:'Sie verschließen Wunden.',l:'blutzellen'},
+ {q:'Was bilden B-Zellen?',a:['Antikörper','Insulin','Blutplättchen','Knochen'],e:'Y-förmige Eiweiße, die Erreger markieren.',l:'immunzellen'},
+ {q:'Worauf beruht eine Impfung?',a:['Auf Gedächtniszellen des Immunsystems','Auf Antibiotika','Auf roten Blutzellen','Auf Mutationen'],e:'Das Immunsystem lernt den Erreger kennen, ohne krank zu werden.',l:'immunzellen'},
+ {q:'Was tun Fresszellen (Makrophagen)?',a:['Sie umschließen und verdauen Erreger','Sie bilden Sauerstoff','Sie leiten Nervensignale','Sie bauen Knochen'],e:'Sie sind die erste Abwehr vor Ort.',l:'immunzellen'}
+);
+PQ.push(
+ {l:'nervenzelle',s:2,p:.9,q:'Welche Zelle ist hier zu sehen?',a:['Eine Nervenzelle','Eine Muskelzelle','Eine rote Blutzelle','Eine Hefezelle'],e:'Dendriten, langes Axon mit Myelinscheide.'},
+ {l:'muskelzelle',s:1,p:.9,q:'Welche Fäden sind unten zu sehen?',a:['Aktin und Myosin','DNA und RNA','Mikrotubuli','Fibrin'],e:'Sie gleiten ineinander, wenn sich der Muskel zusammenzieht.'},
+ {l:'pilzzelle',s:2,p:.95,q:'Was passiert hier mit der Hefezelle?',a:['Knospung','Mitose mit Spindel','Fotosynthese','Endozytose'],e:'An der Seite wächst eine Tochterzelle heraus.'},
+ {l:'endozytose',s:1,p:.95,q:'Was macht die Membran hier?',a:['Sie stülpt sich um ein Bakterium (Endozytose)','Sie teilt sich','Sie bildet Chloroplasten','Sie kopiert DNA'],e:'So nehmen Zellen große Teilchen auf.'},
+ {l:'replikation',s:2,p:.9,q:'Was passiert hier mit der DNA?',a:['Sie wird kopiert (Replikation)','Sie wird übersetzt (Translation)','Sie mutiert','Sie wird verdaut'],e:'Helikase öffnet, Polymerase baut neue Stränge.'},
+ {l:'crossingover',s:3,p:.9,q:'Was ist hier passiert?',a:['Crossing-over: Stücke wurden getauscht','Mitose','Mutation durch UV','Zellatmung'],e:'Die inneren Chromosomenstränge sind jetzt gemischt.'},
+ {l:'krebs',s:2,p:.95,q:'Was zeigt die rote Zellgruppe?',a:['Einen Tumor aus unkontrolliert geteilten Zellen','Eine Wunde','Ein Mitochondrium','Gesunde Hautzellen'],e:'Die Teilungsbremsen sind durch Mutationen ausgefallen.'},
+ {l:'blutzellen',s:2,p:.6,q:'Was ist hier zu sehen?',a:['Blut in einem Gefäß','Eine Zellmembran','Ein Chloroplast','Eine Nervenzelle'],e:'Rote und weiße Blutzellen und Blutplättchen.'}
+);
+
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
 function genCalc(){const out=[];
