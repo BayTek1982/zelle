@@ -1,0 +1,29 @@
+{
+ "name": "Bayazit Zell-Schule",
+ "short_name": "Zell-Schule",
+ "description": "Lern-App: So funktioniert eine Zelle – als kleine Videos.",
+ "lang": "de",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#05080d",
+ "theme_color": "#05080d",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
